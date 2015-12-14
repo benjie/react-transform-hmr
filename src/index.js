@@ -16,12 +16,18 @@ if (window.__reactComponentProxies) {
 
 export default function proxyReactComponents({ filename, components, imports, locals }) {
   const [React] = imports;
-  const [{ hot }] = locals;
+  const [{ hot, skipHMR }] = locals;
 
   if (!React.Component) {
     throw new Error(
       'imports[0] for react-transform-hmr does not look like React.'
     );
+  }
+
+  if (skipHMR) {
+    return function wrapWithProxy(ReactClass, uniqueId) {
+      return ReactClass;
+    }
   }
 
   if (!hot || typeof hot.accept !== 'function') {
